@@ -21,6 +21,7 @@ body {
     padding: 0;
     min-width: 320px;
     min-height: 100vh;
+    box-sizing: border-box;
 }
 
 h1 {
@@ -29,6 +30,10 @@ h1 {
 }
 
 #app {
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+    justify-content: space-around;
     max-width: 1280px;
     margin: 0 auto;
     padding: 2rem;
@@ -37,27 +42,49 @@ h1 {
 
 
 .panels {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-around;
+
     align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
     gap: 10px;
+    justify-content: space-around;
 }
 
 .panel {
     background-color: #1d1e22;
-    box-shadow: 0 0 0 1px rgba(255, 0, 0, .3);
+    box-shadow: 0 0 0 .5px #1d1e22;
     height: 400px;
     width: 400px;
 }
 
 
-/* rgba(29, 30, 34, .3) */
-
 .panel .menu {
+    align-items: center;
     background-color: #060606;
-    height: 15%;
+    display: flex;
+    height: 10%;
+    justify-content: space-between;
+}
+
+.panel .menu>span {
+    align-items: center;
+    background-color: #1d1e22;
+    color: whitesmoke;
+    display: flex;
+    font-weight: 600;
+    flex-direction: row;
+    height: 100%;
+    width: 30%;
+    letter-spacing: 1px;
+}
+
+
+.icon {
+    height: 24px;
+    width: 24px;
+    line-height: 100%;
+    margin: 0 12px;
 }
 
 .panel .editor {
@@ -86,5 +113,6 @@ textarea:focus {
 }
 
 .preview_container {
+    flex-grow: 3;
     background-color: white;
 }
