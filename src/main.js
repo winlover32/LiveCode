@@ -4,12 +4,27 @@ const htlmEl = $('#html')
 const cssEl = $('#css')
 const jsEl = $('#js')
 
+function init () {
+  console.log('Here')
+  const [html, css, js] = window.location.pathname.split('%7C')
+
+  htlmEl.value = window.atob(html.slice(1))
+  cssEl.value = window.atob(css)
+  jsEl.value = window.atob(js)
+  updatePreview()
+}
+
+const getEditorValues = () => {
+  return {
+    html: htlmEl.value,
+    css: cssEl.value,
+    js: jsEl.value
+  }
+}
+
 const elemenstArray = [htlmEl, cssEl]
 
-const createHTML = () => {
-  const htmlCode = htlmEl.value
-  const cssCode = cssEl.value
-  const jsCode = jsEl.value
+const createDocHTML = (html = '', css = '', js = '') => {
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -20,26 +35,36 @@ const createHTML = () => {
       <title>Document</title>
     </head>
      <style>
-      ${cssCode}
+      ${css}
      </style>
     <body>
-       ${htmlCode}
-    </body>
-    <script>
-     ${jsCode}
+       ${html}
+       <script>
+     ${js}
     </script>
+    </body>
+    
     </html>`
 }
 
-const updateHTML = () => {
-  console.log('Aqui !!')
+const updatePreview = () => {
+  const { html, css, js } = getEditorValues()
+  const htmlDoc = createDocHTML(html, css, js)
   const iframePreview = $('#preview')
-  console.log(iframePreview)
-  const htmlDoc = createHTML()
-  console.log(htmlDoc)
   iframePreview.setAttribute('srcdoc', htmlDoc)
+  updateUrl(htmlDoc)
+}
+
+const updateUrl = () => {
+  const { html, css, js } = getEditorValues()
+  const encodedPage = `${window.btoa(html)}|${window.btoa(css)}|${window.btoa(
+    js
+  )}`
+  window.history.replaceState(null, null, encodedPage)
 }
 
 elemenstArray.forEach((element) => {
-  element.addEventListener('input', updateHTML)
+  element.addEventListener('input', updatePreview)
 })
+
+document.addEventListener('DOMContentLoaded', init)
