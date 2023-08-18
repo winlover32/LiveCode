@@ -1,28 +1,49 @@
+import * as monaco from 'monaco-editor/'
+import HTMLWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
+import CSSWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker'
+window.MonacoEnvironment = {
+  getWorker (_, label) {
+    if (label === 'html') {
+      return new HTMLWorker()
+    }
+    if (label === 'css') {
+      return new CSSWorker()
+    }
+  }
+}
 const $ = (selector) => document.querySelector(selector)
 
 const htlmEl = $('#html')
 const cssEl = $('#css')
 const jsEl = $('#js')
 
-function init () {
-  console.log('Here')
-  const [html, css, js] = window.location.pathname.split('%7C')
+const htmlEditor = monaco.editor.create(htlmEl, {
+  value: '',
+  language: 'html'
+})
 
-  htlmEl.value = window.atob(html.slice(1))
-  cssEl.value = window.atob(css)
-  jsEl.value = window.atob(js)
-  updatePreview()
-}
+const cssEditor = monaco.editor.create(cssEl, {
+  value: '',
+  language: 'css'
+
+})
 
 const getEditorValues = () => {
   return {
-    html: htlmEl.value,
-    css: cssEl.value,
-    js: jsEl.value
+    html: htmlEditor.getValue(),
+    css: cssEditor.getValue(),
+    js: ''
   }
 }
+function init () {
+  const [html, css, js = null] = window.location.pathname.split('%7C')
+  console.log(css)
+  htmlEditor.setValue(window.atob(html.slice(1)))
+  cssEditor.setValue(window.atob(css))
 
-const elemenstArray = [htlmEl, cssEl]
+  // jsEl.value = window.atob(js)
+  updatePreview()
+}
 
 const createDocHTML = (html = '', css = '', js = '') => {
   return `
@@ -47,12 +68,13 @@ const createDocHTML = (html = '', css = '', js = '') => {
     </html>`
 }
 
+// eslint-disable-next-line no-unused-vars
 const updatePreview = () => {
   const { html, css, js } = getEditorValues()
   const htmlDoc = createDocHTML(html, css, js)
   const iframePreview = $('#preview')
   iframePreview.setAttribute('srcdoc', htmlDoc)
-  updateUrl(htmlDoc)
+  updateUrl()
 }
 
 const updateUrl = () => {
@@ -63,8 +85,6 @@ const updateUrl = () => {
   window.history.replaceState(null, null, encodedPage)
 }
 
-elemenstArray.forEach((element) => {
-  element.addEventListener('input', updatePreview)
-})
-
+htmlEditor.onDidChangeModelContent(updatePreview)
+cssEditor.onDidChangeModelContent(updatePreview)
 document.addEventListener('DOMContentLoaded', init)
